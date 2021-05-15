@@ -1,0 +1,15 @@
+{
+  "compilerOptions": {
+    "target": "es5",
+    "moduleResolution": "node",
+    "allowJs": true,
+    "strict": true,
+    "esModuleInterop": true,
+    "typeRoots": ["node_modules/@types"],
+    "skipLibCheck": true,
+    "outDir": "build",
+    "sourceMap": true,
+    "downlevelIteration": true,
+    "resolveJsonModule": true,
+  }
+}
