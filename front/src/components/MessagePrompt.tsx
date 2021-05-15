@@ -1,0 +1,40 @@
+import React from "react";
+import styled, { keyframes } from "styled-components";
+import { useWindupString } from "windups";
+
+import { Small, Text } from "../styles/typography";
+
+interface Props {
+  message?: string;
+  timestamp?: string;
+}
+
+const MessagePrompt = ({ message = "", timestamp = "" }: Props) => {
+  const [windup] = useWindupString(message);
+
+  return (<Wrapper>
+    <Small>{timestamp}</Small>
+    <Text>{windup} <Cursor>▋</Cursor></Text>
+  </Wrapper>)
+}
+
+const Wrapper = styled.div`
+  width: 100%;
+  min-height: 300px;
+`;
+
+export const blink = keyframes`
+  0%, 100% {
+    opacity: 0;
+  }
+  50% {
+    opacity: 1;
+  }
+`;
+
+const Cursor = styled.span`
+  content: "▋";
+  animation: ${blink} 1s step-start infinite;
+`;
+
+export default MessagePrompt;

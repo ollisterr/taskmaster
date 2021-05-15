@@ -1,24 +1,22 @@
 import express from 'express';
 import http from 'http';
-import { Server } from 'socket.io';
+import { Server, Socket } from 'socket.io';
 import { v4 as uuidv4 } from 'uuid';
+import { createMessage } from './utils';
 
 const app = express();
 const server: http.Server = http.createServer(app);
 
 const io: Server = require('socket.io')(server, {
   cors: {
-    origin: '*:*',
+    origin: '*',
     methods: ['GET', 'POST'],
     credentials: false,
   },
 });
 
 const rooms: Record<string, { message: string; timestamp: string }> = {};
-
-let connections = 0;
-const addConnections = () => (connections += 1);
-const removeConnections = () => (connections -= 1);
+const connections: Record<string, string> = {};
 
 io.on('connection', (socket) => {
   if (!socket.handshake.headers.origin) {
@@ -27,32 +25,41 @@ io.on('connection', (socket) => {
     return;
   }
 
-  addConnections();
-  console.info(`Socket count: ${connections}`);
+  console.info(`Socket count: ${Object.keys(connections).length}`);
 
   socket.on('newConnection', (roomId: string) => {
     if (roomId in rooms) {
+      if (socket.id in connections) {
+        // remove from previous room
+        socket.leave(connections[socket.id]);
+      }
       socket.join(roomId);
+      connections[socket.id] = roomId;
+
+      // sync current message
       socket.emit('message', rooms[roomId]);
     } else {
-      socket.emit('error', 'No room found');
-      socket.disconnect();
+      console.log('Invalid room code');
+      socket.emit('message', createMessage('You seem to be lost. Re-check your pass code.'));
     }
   });
 
   socket.on('newMessage', ({ roomId, message }) => {
     if (roomId in rooms) {
       // Update latest message
-      rooms[roomId] = { message, timestamp: new Date().toISOString() };
+      rooms[roomId] = createMessage(message);
       io.to(roomId).emit('message', message);
     } else {
-      socket.emit('error', 'No room found');
+      socket.emit('message', createMessage('You seem to be lost. Re-check your pass code.'));
       socket.disconnect();
     }
   });
 
   socket.once('disconnect', () => {
-    removeConnections();
+    if (socket.id in connections) {
+      // remove from previous room
+      socket.leave(connections[socket.id]);
+    }
   });
 });
 
@@ -77,7 +84,7 @@ app.get('/', (req, res) => res.send('Hello world!'));
 
 app.post('/create', (req, res) => {
   const roomId = req.body.roomId || uuidv4();
-  rooms[roomId] = { message: 'Hello', timestamp: new Date().toISOString() };
+  rooms[roomId] = createMessage('Hello');
 
   res.redirect(`/admin/${roomId}`);
 });
