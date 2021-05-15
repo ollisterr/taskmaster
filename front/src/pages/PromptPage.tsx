@@ -13,6 +13,7 @@ const PromptPage = () => {
   
   useEffect(() => {
     const roomId = params["room"];
+    console.log(roomId)
 
     socket.emit("newConnection", roomId);
     

@@ -21,7 +21,7 @@ const App = () => {
             <AdminPage />
           </Route>
 
-          <Route path="/">
+          <Route path="/:room">
             <PromptPage />
           </Route>
         </Switch>

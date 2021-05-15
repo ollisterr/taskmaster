@@ -1,10 +1,15 @@
+import cors from 'cors';
 import express from 'express';
 import http from 'http';
-import { Server, Socket } from 'socket.io';
+import { Server } from 'socket.io';
 import { v4 as uuidv4 } from 'uuid';
-import { createMessage } from './utils';
+
+import { createMessage, formatUrl } from './utils';
 
 const app = express();
+app.use(cors());
+app.use(express.json());
+
 const server: http.Server = http.createServer(app);
 
 const io: Server = require('socket.io')(server, {
@@ -39,6 +44,7 @@ io.on('connection', (socket) => {
       // sync current message
       socket.emit('message', rooms[roomId]);
     } else {
+      console.log(rooms, roomId, roomId in rooms);
       console.log('Invalid room code');
       socket.emit('message', createMessage('You seem to be lost. Re-check your pass code.'));
     }
@@ -83,10 +89,14 @@ io.listen(PORT);
 app.get('/', (req, res) => res.send('Hello world!'));
 
 app.post('/create', (req, res) => {
-  const roomId = req.body.roomId || uuidv4();
+  if (req.body.roomId in rooms) {
+    return res.status(400).json({ message: 'Chat name taken', code: 400 });
+  }
+  const roomId = req.body.roomId ? formatUrl(req.body.roomId) : uuidv4();
   rooms[roomId] = createMessage('Hello');
 
-  res.redirect(`/admin/${roomId}`);
+  console.log(`Created new chat: ${roomId}`);
+  res.json({ roomId });
 });
 
 app.listen(PORT + 1, () => {
