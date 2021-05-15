@@ -1,8 +1,7 @@
 import React, { useState } from "react";
 import { useHistory } from "react-router";
-import styled, { css } from "styled-components";
 
-import { Page } from "../styles";
+import { Button, Headline, Input, Page } from "../styles";
 import { Small } from "../styles/typography";
 
 const CreatePage = () => {
@@ -34,51 +33,16 @@ const CreatePage = () => {
   return (
     <Page>
       <form onSubmit={handleSubmit}>
-        <H2>Create TaskMaster Chat</H2>
+        <Headline>Create TaskMaster Chat</Headline>
 
         <Input value={roomId} onChange={(e) => setRoomId(e.target.value)} placeholder="Chat name" />
 
         <Small>{error}</Small>
 
-        <Button type="submit">Create</Button>
+        <Button>Create</Button>
       </form>
     </Page>
   )
 }
-
-const H2 = styled.h2`
-  font-size: 2.4rem;
-  text-align: center;
-  margin-bottom: 2rem;
-`;
-
-const styles = css`
-  width: 100%;
-  padding: 1rem;
-  border-radius: 5px;
-  
-  font-size: 1.5rem;
-  color: white;
-  font-family: inherit;
-  background-color: transparent;
-  margin-bottom: 1rem;
-`;
-
-const Input = styled.input`
-  ${styles}
-  border: solid 2px #fff;
-
-  &:focus {
-    outline: none;
-  }
-`;
-
-const Button = styled.button`
-  ${styles}
-  border: none;
-  background-color: #fff;
-  color: #333;
-  cursor: pointer;
-`;
 
 export default CreatePage;

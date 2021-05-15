@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
 
 import MessagePrompt from "../components/MessagePrompt";
 import { Page } from "../styles";
 import socket from "../utils/socket";
 import { Message } from "../types"
-import { useParams } from "react-router-dom";
 
 const PromptPage = () => {
   const params = useParams<{ room: string }>();
@@ -13,13 +13,10 @@ const PromptPage = () => {
   
   useEffect(() => {
     const roomId = params["room"];
-    console.log(roomId)
 
     socket.emit("newConnection", roomId);
     
-    socket.on("message", (message) => {
-      setMessage(message)
-    })
+    socket.on("message", setMessage)
 
     return () => {
       socket.off("message")

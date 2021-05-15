@@ -12,6 +12,7 @@ const characterMap: Record<string, string> = {
 export const formatUrl = (rawUrl: string) => {
   return rawUrl
     .trim()
+    .toLowerCase()
     .replace(/[äåö]/g, (x) => characterMap[x])
     .replace(/\W/g, '-');
 };

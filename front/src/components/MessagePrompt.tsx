@@ -14,6 +14,7 @@ const MessagePrompt = ({ message = "", timestamp = "" }: Props) => {
 
   return (<Wrapper>
     <Small>{timestamp}</Small>
+
     <Text>{windup} <Cursor>▋</Cursor></Text>
   </Wrapper>)
 }
@@ -21,6 +22,7 @@ const MessagePrompt = ({ message = "", timestamp = "" }: Props) => {
 const Wrapper = styled.div`
   width: 100%;
   min-height: 300px;
+  margin: 2rem 0;
 `;
 
 export const blink = keyframes`

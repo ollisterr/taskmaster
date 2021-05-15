@@ -30,7 +30,7 @@ io.on('connection', (socket) => {
     return;
   }
 
-  console.info(`Socket count: ${Object.keys(connections).length}`);
+  console.info(`Socket count: ${Object.keys(connections).length + 1}`);
 
   socket.on('newConnection', (roomId: string) => {
     if (roomId in rooms) {
@@ -38,14 +38,14 @@ io.on('connection', (socket) => {
         // remove from previous room
         socket.leave(connections[socket.id]);
       }
+
       socket.join(roomId);
       connections[socket.id] = roomId;
 
       // sync current message
       socket.emit('message', rooms[roomId]);
     } else {
-      console.log(rooms, roomId, roomId in rooms);
-      console.log('Invalid room code');
+      console.log('Invalid Room Code');
       socket.emit('message', createMessage('You seem to be lost. Re-check your pass code.'));
     }
   });
@@ -53,11 +53,9 @@ io.on('connection', (socket) => {
   socket.on('newMessage', ({ roomId, message }) => {
     if (roomId in rooms) {
       // Update latest message
+      const newMessage = createMessage(message);
       rooms[roomId] = createMessage(message);
-      io.to(roomId).emit('message', message);
-    } else {
-      socket.emit('message', createMessage('You seem to be lost. Re-check your pass code.'));
-      socket.disconnect();
+      io.to(roomId).emit('message', newMessage);
     }
   });
 
@@ -65,6 +63,7 @@ io.on('connection', (socket) => {
     if (socket.id in connections) {
       // remove from previous room
       socket.leave(connections[socket.id]);
+      delete connections[socket.id];
     }
   });
 });
