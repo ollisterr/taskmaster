@@ -4,7 +4,7 @@ WORKDIR /src
 
 ADD . /src
 
-RUN npm run build
+RUN npm install && npm run build
 
 FROM node:12.14.1-alpine
 
