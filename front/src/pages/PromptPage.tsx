@@ -3,7 +3,7 @@ import { useParams } from "react-router-dom";
 
 import MessagePrompt from "../components/MessagePrompt";
 import { Page } from "../styles";
-import socket from "../utils/socket";
+import { socket } from "../utils/config";
 import { Message } from "../types"
 
 const PromptPage = () => {

@@ -10,7 +10,7 @@ interface Props {
 }
 
 const MessagePrompt = ({ message = "", timestamp = "" }: Props) => {
-  const [windup] = useWindupString(message);
+  const [windup] = useWindupString(message, { pace: () => 60 });
 
   return (<Wrapper>
     <Small>{timestamp}</Small>
@@ -36,7 +36,7 @@ export const blink = keyframes`
 
 const Cursor = styled.span`
   content: "▋";
-  animation: ${blink} 1s step-start infinite;
+  animation: ${blink} 700ms step-start infinite;
 `;
 
 export default MessagePrompt;

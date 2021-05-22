@@ -1,0 +1,17 @@
+version: "3"
+
+services:
+  front:
+    container_name: front
+    build: ./front/
+    ports:
+      - "127.0.0.1:3000:80"
+    restart: always
+
+  back:
+    container_name: back
+    build: ./back/
+    ports:
+      - "127.0.0.1:4000:4000"
+      - "127.0.0.1:4001:4001"
+    restart: always

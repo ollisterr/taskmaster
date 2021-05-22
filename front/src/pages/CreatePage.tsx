@@ -3,6 +3,7 @@ import { useHistory } from "react-router";
 
 import { Button, Headline, Input, Page } from "../styles";
 import { Small } from "../styles/typography";
+import { API_URL } from "../utils/config";
 
 const CreatePage = () => {
   const [roomId, setRoomId] = useState("");
@@ -13,7 +14,7 @@ const CreatePage = () => {
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    fetch("http://localhost:8001/create", {
+    fetch(API_URL + "/create", {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

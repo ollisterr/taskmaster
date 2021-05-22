@@ -6,7 +6,7 @@ import MessagePrompt from "../components/MessagePrompt";
 import { Button, Headline, Page, Textarea } from "../styles";
 import { Text } from "../styles/typography";
 import { Message } from "../types";
-import socket from "../utils/socket";
+import { socket } from "../utils/config";
 
 const AdminPage = () => {
   const params = useParams<{ room: string }>();
