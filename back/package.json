@@ -7,7 +7,8 @@
     "start": "nodemon index.ts",
     "start:prod": "node build/index.js",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "tsc --project ./"
+    "build": "rm -rf ./build && tsc --project ./tsconfig.json",
+    "ts": "tsc --project ./tsconfig.json --noEmit"
   },
   "repository": {
     "type": "git",

@@ -4,8 +4,7 @@ WORKDIR /src
 
 ADD . /src
 
-RUN npm config set cache .cache --global && \
-  npm run build
+RUN npm run build
 
 FROM node:12.14.1-alpine
 
