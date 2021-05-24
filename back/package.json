@@ -6,9 +6,10 @@
   "scripts": {
     "start": "nodemon index.ts",
     "start:prod": "node build/index.js",
-    "test": "echo \"Error: no test specified\" && exit 1",
     "build": "rm -rf ./build && tsc --project ./tsconfig.json",
-    "ts": "tsc --project ./tsconfig.json --noEmit"
+    "ts": "tsc --project ./tsconfig.json --noEmit",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "lint": "eslint . -c .eslintrc --ext .js,.ts"
   },
   "repository": {
     "type": "git",
