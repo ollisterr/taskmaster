@@ -2,7 +2,8 @@ import React from 'react';
 import {
   BrowserRouter as Router,
   Switch,
-  Route
+  Route,
+  Redirect
 } from "react-router-dom";
 import AdminPage from './pages/AdminPage';
 import CreatePage from './pages/CreatePage';
@@ -23,6 +24,10 @@ const App = () => {
 
           <Route path="/:room">
             <PromptPage />
+          </Route>
+          
+          <Route path="/">
+            <Redirect to="/create" />
           </Route>
         </Switch>
       </Router>

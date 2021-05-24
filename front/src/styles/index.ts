@@ -1,8 +1,11 @@
 import styled, { css } from "styled-components";
 
 export const Page = styled.main`
-  width: 500px;
-  max-width: 100%;
+  display: flex;
+  flex-direction: column;
+  width: 60vw;
+  max-width: 100vw;
+  padding: 1rem;
 `;
 
 

@@ -10,7 +10,7 @@ interface Props {
 }
 
 const MessagePrompt = ({ message = "", timestamp = "" }: Props) => {
-  const [windup] = useWindupString(message, { pace: () => 60 });
+  const [windup] = useWindupString(message, { pace: (c: string) => [".", "!", "?"].includes(c) ? 400 : 40 });
 
   return (<Wrapper>
     <Small>{timestamp}</Small>
@@ -23,6 +23,7 @@ const Wrapper = styled.div`
   width: 100%;
   min-height: 300px;
   margin: 2rem 0;
+  font-size: 2vh;
 `;
 
 export const blink = keyframes`
