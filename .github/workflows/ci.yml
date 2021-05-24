@@ -1,0 +1,37 @@
+name: CI
+
+on:
+  push:
+    branches-ignore:
+      - "main"
+
+env:
+  NODE_VERSION: 12.14.1
+
+jobs:
+  check-types-back:
+    name: Check Types (back)
+    runs-on: ubuntu-18.04
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v1
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+      - name: Install Dependencies (No Lifecycle Scripts)
+        run: cd back && npm install
+      - name: Check Types
+        run: cd back && npm run ts
+
+  lint-back:
+    name: Run Linter (back)
+    runs-on: ubuntu-18.04
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v1
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          registry-url: ${{ env.REGISTRY_URL }}
+      - name: Install Dependencies (No Lifecycle Scripts)
+        run: cd back && npm install
+      - name: Run Linter
+        run: cd back && npm run lint
