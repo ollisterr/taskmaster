@@ -6,7 +6,7 @@ on:
       - "main"
 
 env:
-  NODE_VERSION: 12.14.1
+  NODE_VERSION: 16.2.0
 
 jobs:
   check-types-back:

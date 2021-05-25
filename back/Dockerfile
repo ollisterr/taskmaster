@@ -1,4 +1,4 @@
-FROM node:12.14.1
+FROM node:16.2.0
 
 WORKDIR /src
 
@@ -6,7 +6,7 @@ ADD . /src
 
 RUN npm install && npm run build
 
-FROM node:12.14.1-alpine
+FROM node:16.2.0-alpine
 
 RUN apk add --no-cache tini
 RUN apk add --no-cache curl
@@ -20,6 +20,7 @@ COPY --from=0 /src/build /app/build
 COPY --from=0 /src/node_modules /app/node_modules
 
 ADD package.json /app/
+ADD files/service-account.json /app/files/
 
 EXPOSE 4000
 EXPOSE 4001
