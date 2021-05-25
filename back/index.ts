@@ -63,7 +63,7 @@ io.on('connection', (socket) => {
       });
     } else {
       console.log('Invalid Room Code');
-      socket.emit('message', createMessage('You seem to be lost. Re-check your pass code.'));
+      socket.emit('invalidRoom');
     }
   });
 
@@ -79,6 +79,8 @@ io.on('connection', (socket) => {
 
       rooms[roomId] = { ...rooms[roomId], ...newMessage, file: filePath };
       io.to(roomId).emit('message', { ...newMessage, file: fileBuffer });
+    } else {
+      socket.emit('invalidRoom');
     }
   });
 

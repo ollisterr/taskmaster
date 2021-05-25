@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useHistory, useParams } from "react-router-dom";
 import styled from "styled-components";
 
 import MessagePrompt from "../components/MessagePrompt";
@@ -12,13 +12,19 @@ const AdminPage = () => {
   const params = useParams<{ room: string }>();
   const roomId = params["room"];
 
+  const history = useHistory();
+
   const [message, setMessage] = useState<Message>();
   const [newMessage, setNewMessage] = useState("");
 
   useEffect(() => {
     socket.emit("newConnection", roomId);
     
-    socket.on("message", setMessage)
+    socket.on("message", setMessage);
+
+    socket.on("invalidRoom", () => {
+      history.replace("/");
+    })
 
     return () => {
       socket.off("message")
@@ -28,7 +34,7 @@ const AdminPage = () => {
   const handleSendMessage = (e?: React.FormEvent<HTMLFormElement>) => {
     e?.preventDefault();
 
-    socket.emit("newMessage", { roomId, message: newMessage })
+    socket.emit("newMessage", { roomId, message: newMessage });
     setNewMessage("");
   }
 

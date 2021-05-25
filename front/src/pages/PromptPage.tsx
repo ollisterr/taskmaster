@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useHistory, useParams } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import styled from "styled-components";
 import { faVolumeMute, faVolumeUp } from '@fortawesome/free-solid-svg-icons';
@@ -30,6 +30,7 @@ const playAudio = async (file: ArrayBuffer) => {
 
 const PromptPage = () => {
   const params = useParams<{ room: string }>();
+  const history = useHistory();
 
   const [message, setMessage] = useState<Message>();
   const [mute, toggleMute] = useState<boolean>(true);
@@ -40,6 +41,10 @@ const PromptPage = () => {
     socket.emit("newConnection", roomId);
     
     socket.on("message", setMessage);
+
+    socket.on("invalidRoom", () => {
+      setMessage({ message: "You seem to be lost. Re-check your URL...", timestamp: new Date().toISOString() })
+    })
 
     return () => {
       socket.off("message")
