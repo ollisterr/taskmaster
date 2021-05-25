@@ -2,13 +2,13 @@ import cors from 'cors';
 import express from 'express';
 import http from 'http';
 import { Server } from 'socket.io';
-import { v4 as uuidv4 } from 'uuid';
+import bcrypt from 'bcrypt';
 import fs from 'fs';
 import util from 'util';
+import { v4 as uuidv4 } from 'uuid';
 
 import { createMessage, formatUrl } from './utils';
 import { speak } from './utils/textToSpeech';
-import { FILES_PATH } from './utils/config';
 import { initFileSystem } from './utils/fileSystem';
 
 const app = express();
@@ -25,7 +25,14 @@ const io: Server = require('socket.io')(server, {
   },
 });
 
-type Message = { message: string; timestamp: string; file?: string; mute: boolean };
+type Message = {
+  message: string;
+  timestamp: string;
+  file?: string;
+  mute: boolean;
+  password: string;
+  token: string;
+};
 
 const rooms: Record<string, Message> = {};
 const connections: Record<string, string> = {};
@@ -39,7 +46,7 @@ io.on('connection', (socket) => {
 
   console.info(`Socket count: ${Object.keys(connections).length + 1}`);
 
-  socket.on('newConnection', async (roomId: string) => {
+  socket.on('newConnection', async (roomId) => {
     if (roomId in rooms) {
       if (socket.id in connections) {
         // remove from previous room
@@ -67,8 +74,13 @@ io.on('connection', (socket) => {
     }
   });
 
-  socket.on('newMessage', async ({ roomId, message }) => {
+  socket.on('newMessage', async ({ roomId, message, token }) => {
     if (roomId in rooms) {
+      if (token !== rooms[roomId].token) {
+        socket.emit('invalidToken');
+        return;
+      }
+
       // Update latest message
       const newMessage = createMessage(message);
 
@@ -80,7 +92,7 @@ io.on('connection', (socket) => {
       rooms[roomId] = { ...rooms[roomId], ...newMessage, file: filePath };
       io.to(roomId).emit('message', { ...newMessage, file: fileBuffer });
     } else {
-      socket.emit('invalidRoom');
+      return socket.emit('invalidRoom');
     }
   });
 
@@ -144,21 +156,53 @@ app.post('/join', (req, res) => {
   }
 });
 
-app.post('/create', (req, res) => {
-  if (!req.body.roomId) {
-    return res.status(400).json({ message: 'Invalid room ID', code: 400 });
+app.post('/login', async (req, res) => {
+  if (!req.body.roomId || !req.body.password) {
+    return res.status(400).json({ message: 'Missing parameters', code: 400 });
   }
 
   const roomId = formatUrl(req.body.roomId);
 
-  if (roomId in rooms) {
+  if (!(roomId in rooms)) {
+    return res.status(404).json({ message: 'Room Not Found', code: 404 });
+  }
+
+  const validPassword = await bcrypt.compare(req.body.password, rooms[roomId].password);
+
+  if (!validPassword) {
+    return res.status(401).json({ message: 'Wrong credentials', code: 401 });
+  }
+
+  return res.json({ roomId, token: rooms[roomId].token });
+});
+
+app.post('/create', async (req, res) => {
+  if (!req.body.roomId || !req.body.password) {
+    return res.status(400).json({ message: 'Invalid parameters', code: 400 });
+  }
+
+  const roomId = formatUrl(req.body.roomId);
+
+  if (roomId.length < 4) {
+    return res.status(400).json({ message: 'Room name too short', code: 400 });
+  }
+
+  if (roomId in rooms || ['admin'].includes(roomId)) {
     return res.status(400).json({ message: 'Chat name taken', code: 400 });
   }
 
-  rooms[roomId] = { ...createMessage('Hello'), mute: false };
+  if (req.body.password.length < 4) {
+    return res.status(400).json({ message: 'Password too short', code: 400 });
+  }
+
+  const salt = await bcrypt.genSalt(roomId.length);
+  const passwordHash = await bcrypt.hash(req.body.password, salt);
+  const token = uuidv4();
+
+  rooms[roomId] = { ...createMessage('Hello'), mute: false, password: passwordHash, token };
 
   console.log(`Created new chat: ${roomId}`);
-  res.json({ roomId });
+  res.json({ roomId, token });
 });
 
 app.listen(PORT + 1, () => {

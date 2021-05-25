@@ -1,13 +1,13 @@
-import React, { useEffect, useState } from "react";
-import { useHistory, useParams } from "react-router-dom";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import styled from "styled-components";
+import React, { useEffect, useState } from 'react';
+import { useParams } from 'react-router-dom';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import styled from 'styled-components';
 import { faVolumeMute, faVolumeUp } from '@fortawesome/free-solid-svg-icons';
 
-import MessagePrompt from "../components/MessagePrompt";
-import { Page } from "../styles";
-import { socket } from "../utils/config";
-import { Message } from "../types"
+import MessagePrompt from '../components/MessagePrompt';
+import { Page } from '../styles';
+import { socket } from '../utils/config';
+import { Message } from '../types';
 
 
 const playAudio = async (file: ArrayBuffer) => {
@@ -24,9 +24,9 @@ const playAudio = async (file: ArrayBuffer) => {
       source.start(0);
     }
   } catch (err) {
-    console.error("Reading audio buffer failed", err);
+    console.error('Reading audio buffer failed', err);
   }
-}
+};
 
 const PromptPage = () => {
   const params = useParams<{ room: string }>();
@@ -35,26 +35,29 @@ const PromptPage = () => {
   const [mute, toggleMute] = useState<boolean>(true);
   
   useEffect(() => {
-    const roomId = params["room"];
+    const roomId = params['room'];
 
-    socket.emit("newConnection", roomId);
+    socket.emit('newConnection', roomId);
     
-    socket.on("message", setMessage);
+    socket.on('message', setMessage);
 
-    socket.on("invalidRoom", () => {
-      setMessage({ message: "You seem to be lost. Re-check your URL...", timestamp: new Date().toISOString() })
-    })
+    socket.on('invalidRoom', () => {
+      setMessage({ 
+        message: 'You seem to be lost. Re-check your URL...', 
+        timestamp: new Date().toISOString() 
+      });
+    });
 
     return () => {
-      socket.off("message")
+      socket.off('message');
     };
-  }, [params])
+  }, [params]);
 
   useEffect(() => {
     if (!mute && message?.file) {
-      playAudio(message.file)
+      playAudio(message.file);
     }
-  }, [message, mute])
+  }, [message, mute]);
 
   return (<Page>
     <MessagePrompt {...message} />
@@ -62,14 +65,15 @@ const PromptPage = () => {
     <MuteButton onClick={() => toggleMute(x => !x)}>
       <FontAwesomeIcon icon={mute ? faVolumeMute : faVolumeUp} />
     </MuteButton>
-  </Page>)
-}
+  </Page>);
+};
 
 const MuteButton = styled.button`
   position: fixed;
   display: flex;
   align-items: center;
   justify-content: center;
+
   bottom: 1.5rem;
   right: 1.5rem;
   width: 50px;

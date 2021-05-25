@@ -5,7 +5,8 @@ export const post = async (url: string, body: any) => {
       'Content-Type': 'application/json',
     },
     body: JSON.stringify(body)
-  })
+  });
+
   const responseJson = await response.json();
 
   if (!response.ok) {
@@ -13,6 +14,6 @@ export const post = async (url: string, body: any) => {
   }
 
   return responseJson;
-}
+};
 
 export default { post };

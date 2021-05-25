@@ -3,18 +3,24 @@ import {
   BrowserRouter as Router,
   Switch,
   Route,
-} from "react-router-dom";
+} from 'react-router-dom';
+
 import AdminPage from './pages/AdminPage';
 import FrontPage from './pages/FrontPage';
+import LoginPage from './pages/LoginPage';
 import PromptPage from './pages/PromptPage';
 
 const App = () => {
   return (
     <div className="App">
       <Router>
-      <Switch>
+        <Switch>
           <Route path="/admin/:room">
             <AdminPage />
+          </Route>
+          
+          <Route path="/admin">
+            <LoginPage />
           </Route>
 
           <Route path="/:room">
@@ -28,6 +34,6 @@ const App = () => {
       </Router>
     </div>
   );
-}
+};
 
 export default App;

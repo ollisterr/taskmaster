@@ -1,4 +1,4 @@
-import styled, { css } from "styled-components";
+import styled, { css } from 'styled-components';
 
 export const Page = styled.main`
   display: flex;
@@ -8,11 +8,14 @@ export const Page = styled.main`
   padding: 1rem;
 `;
 
+export const Spacer = styled.div<{ horizontal?: boolean }>`
+  ${p => p.horizontal && 'width: 2rem;'}
+  ${p => !p.horizontal && 'height: 2rem;'}
+`;
 
-export const Headline = styled.h2`
-  font-size: 2.4rem;
-  text-align: center;
-  margin-bottom: 2rem;
+export const Hidden = styled.span`
+  font-size: inherit;
+  visibility: hidden;
 `;
 
 const styles = css`
@@ -35,6 +38,7 @@ const styles = css`
 export const Input = styled.input`
   ${styles}
   border: solid 2px #fff;
+  margin-bottom: 0.5rem;
 `;
 
 export const Textarea = styled.textarea`

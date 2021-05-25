@@ -1,23 +1,26 @@
-import React from "react";
-import styled, { keyframes } from "styled-components";
-import { useWindupString } from "windups";
+import React from 'react';
+import styled, { keyframes } from 'styled-components';
+import { useWindupString } from 'windups';
 
-import { Small, Text } from "../styles/typography";
+import { Small, Text } from '../styles/typography';
 
 interface Props {
   message?: string;
   timestamp?: string;
 }
 
-const MessagePrompt = ({ message = "", timestamp = "" }: Props) => {
-  const [windup] = useWindupString(message, { pace: (c: string) => [".", "!", "?"].includes(c) ? 400 : 40 });
+const MessagePrompt = ({ message = '', timestamp = '' }: Props) => {
+  const [windup] = useWindupString(
+    message, 
+    { pace: (c: string) => ['.', '!', '?'].includes(c) ? 400 : 40 }
+  );
 
   return (<Wrapper>
     <Small>{timestamp}</Small>
 
     <Text>{windup} <Cursor>▋</Cursor></Text>
-  </Wrapper>)
-}
+  </Wrapper>);
+};
 
 const Wrapper = styled.div`
   width: 100%;
