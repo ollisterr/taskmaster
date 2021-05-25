@@ -18,6 +18,16 @@
   },
   "plugins": ["react", "@typescript-eslint"],
   "rules": {
-    "no-unused-vars": "warn"
+    "no-unused-vars": "warn",
+    "semi": "error",
+    "quotes": ["error", "single"],
+    "space-infix-ops": "error",
+    "curly": ["error", "all"],
+    "indent": ["error", 2],
+    "prefer-object-spread": "error",
+    "new-cap": ["error", { "capIsNew": false }],
+    "react/prop-types": 0,
+    "no-multiple-empty-lines": ["error", { "max": 2, "maxEOF": 0 }],
+    "max-len": ["error", { "code": 80 }]
   }
 }
