@@ -1,6 +1,5 @@
 import cors from 'cors';
 import express from 'express';
-import { unlink } from 'fs';
 import http from 'http';
 import { Server } from 'socket.io';
 import { v4 as uuidv4 } from 'uuid';
@@ -9,6 +8,8 @@ import util from 'util';
 
 import { createMessage, formatUrl } from './utils';
 import { speak } from './utils/textToSpeech';
+import { FILES_PATH } from './utils/config';
+import { initFileSystem } from './utils/fileSystem';
 
 const app = express();
 app.use(cors());
@@ -96,6 +97,10 @@ io.on('connection', (socket) => {
   });
 });
 
+// FILE SYSTEM
+initFileSystem();
+
+// clean files every 12h
 setInterval(() => {
   Object.entries(rooms).forEach(async ([key, value]) => {
     const date = new Date(value.timestamp);
@@ -103,12 +108,17 @@ setInterval(() => {
     // Delete rooms that have been idle for over 3 days
     if (Date.now() - date.getTime() > 1000 * 60 * 60 * 24 * 3) {
       delete rooms[key];
+
       if (rooms[key].file) {
-        await unlink(rooms[key].file as string, () => undefined);
+        await fs.unlink(rooms[key].file as string, (err) =>
+          console.log('Error deleting file:', err),
+        );
       }
     }
   });
-});
+}, 1000 * 60 * 60 * 12);
+
+// WEB SOCKET
 
 const PORT = Number(process.env.PORT) || 8000;
 
@@ -116,7 +126,7 @@ io.listen(PORT);
 
 // ROUTES
 
-app.get('/', (req, res) => res.send('Hello world!'));
+app.get('/', (_, res) => res.send('Hello world!'));
 
 app.post('/create', (req, res) => {
   if (req.body.roomId in rooms) {

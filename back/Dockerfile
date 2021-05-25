@@ -19,8 +19,8 @@ WORKDIR /app
 COPY --from=0 /src/build /app/build
 COPY --from=0 /src/node_modules /app/node_modules
 
-ADD package.json /app/
-ADD files/service-account.json /app/files/
+COPY package.json /app/
+COPY files/service-account.json /app/files/
 
 EXPOSE 4000
 EXPOSE 4001

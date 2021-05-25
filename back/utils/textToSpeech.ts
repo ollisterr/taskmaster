@@ -27,7 +27,7 @@ export const speak = async (text: string, roomId: string) => {
   // Write the binary audio content to a local file
   const writeFile = util.promisify(fs.writeFile);
 
-  const filePath = `${FILES_PATH}/output-${roomId}.mp3`;
+  const filePath = `${FILES_PATH}/audio/output-${roomId}.mp3`;
   console.log('Saving file to:', filePath);
 
   await writeFile(filePath, response.audioContent as Uint8Array, 'binary');
