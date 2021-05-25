@@ -1,10 +1,14 @@
 import cors from 'cors';
 import express from 'express';
+import { unlink } from 'fs';
 import http from 'http';
 import { Server } from 'socket.io';
 import { v4 as uuidv4 } from 'uuid';
+import fs from 'fs';
+import util from 'util';
 
 import { createMessage, formatUrl } from './utils';
+import { speak } from './utils/textToSpeech';
 
 const app = express();
 app.use(cors());
@@ -20,7 +24,9 @@ const io: Server = require('socket.io')(server, {
   },
 });
 
-const rooms: Record<string, { message: string; timestamp: string }> = {};
+type Message = { message: string; timestamp: string; file?: string; mute: boolean };
+
+const rooms: Record<string, Message> = {};
 const connections: Record<string, string> = {};
 
 io.on('connection', (socket) => {
@@ -32,7 +38,7 @@ io.on('connection', (socket) => {
 
   console.info(`Socket count: ${Object.keys(connections).length + 1}`);
 
-  socket.on('newConnection', (roomId: string) => {
+  socket.on('newConnection', async (roomId: string) => {
     if (roomId in rooms) {
       if (socket.id in connections) {
         // remove from previous room
@@ -42,20 +48,44 @@ io.on('connection', (socket) => {
       socket.join(roomId);
       connections[socket.id] = roomId;
 
+      const readFile = util.promisify(fs.readFile);
+
+      const file =
+        !rooms[roomId].mute && rooms[roomId].file
+          ? await readFile(rooms[roomId].file as string)
+          : undefined;
+
+      console.log(rooms[roomId].file, file);
+
       // sync current message
-      socket.emit('message', rooms[roomId]);
+      socket.emit('message', {
+        ...rooms[roomId],
+        file,
+      });
     } else {
       console.log('Invalid Room Code');
       socket.emit('message', createMessage('You seem to be lost. Re-check your pass code.'));
     }
   });
 
-  socket.on('newMessage', ({ roomId, message }) => {
+  socket.on('newMessage', async ({ roomId, message }) => {
     if (roomId in rooms) {
       // Update latest message
       const newMessage = createMessage(message);
-      rooms[roomId] = createMessage(message);
-      io.to(roomId).emit('message', newMessage);
+
+      let filePath, fileBuffer;
+      if (!rooms[roomId].mute) {
+        [filePath, fileBuffer] = await speak(message, roomId);
+      }
+
+      rooms[roomId] = { ...rooms[roomId], ...newMessage, file: filePath };
+      io.to(roomId).emit('message', { ...newMessage, file: fileBuffer });
+    }
+  });
+
+  socket.on('toggleMute', async ({ roomId, mute }) => {
+    if (roomId in rooms) {
+      rooms[roomId].mute = mute;
     }
   });
 
@@ -69,12 +99,15 @@ io.on('connection', (socket) => {
 });
 
 setInterval(() => {
-  Object.entries(rooms).forEach(([key, value]) => {
+  Object.entries(rooms).forEach(async ([key, value]) => {
     const date = new Date(value.timestamp);
 
     // Delete rooms that have been idle for over 3 days
     if (Date.now() - date.getTime() > 1000 * 60 * 60 * 24 * 3) {
       delete rooms[key];
+      if (rooms[key].file) {
+        await unlink(rooms[key].file as string, () => undefined);
+      }
     }
   });
 });
@@ -92,7 +125,7 @@ app.post('/create', (req, res) => {
     return res.status(400).json({ message: 'Chat name taken', code: 400 });
   }
   const roomId = req.body.roomId ? formatUrl(req.body.roomId) : uuidv4();
-  rooms[roomId] = createMessage('Hello');
+  rooms[roomId] = { ...createMessage('Hello'), mute: false };
 
   console.log(`Created new chat: ${roomId}`);
   res.json({ roomId });

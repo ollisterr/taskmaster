@@ -15,3 +15,8 @@ services:
       - "127.0.0.1:4000:4000"
       - "127.0.0.1:4001:4001"
     restart: always
+    volumes:
+      - taskmaster:/app/files
+
+volumes:
+  taskmaster:
