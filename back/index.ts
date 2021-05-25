@@ -55,8 +55,6 @@ io.on('connection', (socket) => {
           ? await readFile(rooms[roomId].file as string)
           : undefined;
 
-      console.log(rooms[roomId].file, file);
-
       // sync current message
       socket.emit('message', {
         ...rooms[roomId],
