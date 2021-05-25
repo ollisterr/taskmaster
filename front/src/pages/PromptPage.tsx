@@ -30,7 +30,6 @@ const playAudio = async (file: ArrayBuffer) => {
 
 const PromptPage = () => {
   const params = useParams<{ room: string }>();
-  const history = useHistory();
 
   const [message, setMessage] = useState<Message>();
   const [mute, toggleMute] = useState<boolean>(true);
@@ -89,7 +88,7 @@ const MuteButton = styled.button`
   }
 
   &:focus {
-    box-shadow: 0 0 0 0.25rem coral;
+    box-shadow: 0 0 0 0.25rem red;
     outline: none;
   }
 `;

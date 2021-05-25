@@ -130,11 +130,31 @@ io.listen(PORT);
 
 app.get('/', (_, res) => res.send('Hello world!'));
 
+app.post('/join', (req, res) => {
+  if (!req.body.roomId) {
+    return res.status(400).json({ message: 'Invalid room ID', code: 400 });
+  }
+
+  const roomId = formatUrl(req.body.roomId);
+
+  if (roomId in rooms) {
+    return res.status(200).json({ roomId });
+  } else {
+    return res.status(404).json({ message: 'Room Not Found', code: 404 });
+  }
+});
+
 app.post('/create', (req, res) => {
-  if (req.body.roomId in rooms) {
+  if (!req.body.roomId) {
+    return res.status(400).json({ message: 'Invalid room ID', code: 400 });
+  }
+
+  const roomId = formatUrl(req.body.roomId);
+
+  if (roomId in rooms) {
     return res.status(400).json({ message: 'Chat name taken', code: 400 });
   }
-  const roomId = req.body.roomId ? formatUrl(req.body.roomId) : uuidv4();
+
   rooms[roomId] = { ...createMessage('Hello'), mute: false };
 
   console.log(`Created new chat: ${roomId}`);

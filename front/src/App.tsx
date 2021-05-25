@@ -3,10 +3,9 @@ import {
   BrowserRouter as Router,
   Switch,
   Route,
-  Redirect
 } from "react-router-dom";
 import AdminPage from './pages/AdminPage';
-import CreatePage from './pages/CreatePage';
+import FrontPage from './pages/FrontPage';
 import PromptPage from './pages/PromptPage';
 
 const App = () => {
@@ -14,10 +13,6 @@ const App = () => {
     <div className="App">
       <Router>
       <Switch>
-          <Route path="/create">
-            <CreatePage />
-          </Route>
-
           <Route path="/admin/:room">
             <AdminPage />
           </Route>
@@ -25,9 +20,9 @@ const App = () => {
           <Route path="/:room">
             <PromptPage />
           </Route>
-          
+
           <Route path="/">
-            <Redirect to="/create" />
+            <FrontPage />
           </Route>
         </Switch>
       </Router>

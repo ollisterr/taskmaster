@@ -24,26 +24,24 @@ const styles = css`
   color: white;
   font-family: inherit;
   background-color: transparent;
-  margin-bottom: 1rem;
+  transition: all 0.2s;
+
+  &:focus {
+    box-shadow: 0 0 0 0.25rem red;
+    outline: none;
+  }
 `;
 
 export const Input = styled.input`
   ${styles}
   border: solid 2px #fff;
-
-  &:focus {
-    outline: none;
-  }
 `;
 
 export const Textarea = styled.textarea`
   ${styles}
   border: solid 2px #fff;
+  margin-bottom: 1rem;
   resize: none;
-
-  &:focus {
-    outline: none;
-  }
 `;
 
 export const Button = styled.button`
@@ -52,4 +50,9 @@ export const Button = styled.button`
   background-color: #fff;
   color: #333;
   cursor: pointer;
+  transition: all 0.2s;
+
+  &:hover {
+    background-color: lightgrey;
+  }
 `;
