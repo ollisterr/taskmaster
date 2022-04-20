@@ -9,7 +9,8 @@
     "build": "rm -rf ./build && tsc --project ./tsconfig.json",
     "ts": "tsc --project ./tsconfig.json --noEmit",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "lint": "eslint . -c .eslintrc --ext .js,.ts"
+    "lint": "eslint . -c .eslintrc --ext .js,.ts",
+    "lint:fix": "eslint . -c .eslintrc --ext .js,.ts --fix"
   },
   "repository": {
     "type": "git",
