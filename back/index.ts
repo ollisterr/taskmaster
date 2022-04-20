@@ -86,7 +86,7 @@ io.on('connection', (socket) => {
 
       let filePath, fileBuffer;
       if (!rooms[roomId].mute) {
-        [filePath, fileBuffer] = await speak(message, roomId);
+        [filePath, fileBuffer] = (await speak(message, roomId)) ?? [];
       }
 
       rooms[roomId] = { ...rooms[roomId], ...newMessage, file: filePath };
@@ -167,7 +167,10 @@ app.post('/login', async (req, res) => {
     return res.status(404).json({ message: 'Room Not Found', code: 404 });
   }
 
-  const validPassword = await bcrypt.compare(req.body.password, rooms[roomId].password);
+  const validPassword = await bcrypt.compare(
+    req.body.password,
+    rooms[roomId].password,
+  );
 
   if (!validPassword) {
     return res.status(401).json({ message: 'Wrong credentials', code: 401 });
@@ -199,7 +202,12 @@ app.post('/create', async (req, res) => {
   const passwordHash = await bcrypt.hash(req.body.password, salt);
   const token = uuidv4();
 
-  rooms[roomId] = { ...createMessage('Hello'), mute: false, password: passwordHash, token };
+  rooms[roomId] = {
+    ...createMessage('Hello'),
+    mute: false,
+    password: passwordHash,
+    token,
+  };
 
   console.log(`Created new chat: ${roomId}`);
   res.json({ roomId, token });
