@@ -1,6 +1,6 @@
 import { io } from 'socket.io-client';
 
-const PORT = 4000;
+const PORT = 8000;
 
 export const SOCKET_URL = `${
   window.location.origin.match('localhost')
