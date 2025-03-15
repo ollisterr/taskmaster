@@ -5,16 +5,17 @@ services:
     container_name: front
     build: ./front/
     ports:
-      - "127.0.0.1:3000:80"
-    restart: always
+      - "80:80"
+    restart: unless-stopped
+
 
   back:
     container_name: back
     build: ./back/
     ports:
-      - "127.0.0.1:4000:4000"
-      - "127.0.0.1:4001:4001"
-    restart: always
+      - "4000:4000"
+      - "4001:4001"
+    restart: unless-stopped
     volumes:
       - taskmaster:/app/files
 
