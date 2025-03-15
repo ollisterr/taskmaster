@@ -13,8 +13,8 @@ services:
     container_name: back
     build: ./back/
     ports:
-      - "4000:4000"
-      - "4001:4001"
+      - "8000:4000"
+      - "8001:4001"
     restart: unless-stopped
     volumes:
       - taskmaster:/app/files
