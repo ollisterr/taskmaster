@@ -1,4 +1,4 @@
-FROM node:16.2.0
+FROM node:24.22.1
 
 WORKDIR /src
 
@@ -6,7 +6,7 @@ ADD . /src
 
 RUN npm install && npm run build
 
-FROM node:16.2.0-alpine
+FROM node:24.22.1-alpine
 
 RUN apk add --no-cache tini
 RUN apk add --no-cache curl
