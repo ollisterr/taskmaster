@@ -11,10 +11,10 @@ env:
 jobs:
   check-types-back:
     name: Check Types (back)
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-node@v1
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
         with:
           node-version: ${{ env.NODE_VERSION }}
       - name: Install Dependencies (No Lifecycle Scripts)
@@ -24,10 +24,10 @@ jobs:
 
   lint-back:
     name: Run Linter (back)
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-node@v1
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
         with:
           node-version: ${{ env.NODE_VERSION }}
           registry-url: ${{ env.REGISTRY_URL }}
