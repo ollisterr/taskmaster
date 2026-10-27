@@ -41,11 +41,10 @@ jobs:
     runs-on: ubuntu-24.04
     needs: [check-types-back, lint-back]
     steps:
-      - name: executing remote ssh commands using ssh key
+      - name: executing remote ssh commands using password
         uses: appleboy/ssh-action@0ff4204d59e8e51228ff73bce53f80d53301dee2 # v1.2.5
         with:
-          host: ${{ secrets.HOST }}
-          username: ${{ secrets.USERNAME }}
-          key: ${{ secrets.KEY }}
-          port: ${{ secrets.PORT }}
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          password: ${{ secrets.SSH_PASSWORD }}
           script: ./deploy_taskmaster.sh
