@@ -47,4 +47,4 @@ jobs:
           host: ${{ secrets.SSH_HOST }}
           username: ${{ secrets.SSH_USER }}
           password: ${{ secrets.SSH_PASSWORD }}
-          script: ./deploy_taskmaster.sh
+          script: ~/taskmaster/deploy_taskmaster.sh
