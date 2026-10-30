@@ -5,7 +5,7 @@ import { FILES_PATH } from './config';
 export const initFileSystem = () => {
   // create audio folder if needed
   if (!fs.existsSync(`${FILES_PATH}/audio`)) {
-    fs.mkdirSync(`${FILES_PATH}/audio`);
+    fs.mkdirSync(`${FILES_PATH}/audio`, { recursive: true });
   }
 
   // clean old files on server startup

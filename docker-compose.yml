@@ -1,23 +1,20 @@
-version: "3"
-
 services:
-  front:
-    container_name: front
-    build: ./front/
-    ports:
-      - "80:80"
-    restart: unless-stopped
-
-
-  back:
-    container_name: back
-    build: ./back/
+  taskmaster:
+    container_name: taskmaster
+    build: .
     ports:
       - "8000:4000"
-      - "8001:4001"
     restart: unless-stopped
+    environment:
+      GOOGLE_APPLICATION_CREDENTIALS: /run/secrets/google-service-account
+    secrets:
+      - google-service-account
     volumes:
       - taskmaster:/app/files
+
+secrets:
+  google-service-account:
+    file: ./back/files/service-account.json
 
 volumes:
   taskmaster:
