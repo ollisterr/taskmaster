@@ -3,12 +3,9 @@ FROM node:24.22.1 as builder
 
 WORKDIR /app
 
-ENV PATH /app/node_modules/.bin:$PATH
+COPY package.json package-lock.json /app/
 
-COPY package.json /app/package.json
-
-RUN npm install
-RUN npm install react-scripts@4.0.3 -g
+RUN npm ci
 
 COPY . /app
 
