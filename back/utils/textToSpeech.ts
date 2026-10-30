@@ -1,12 +1,12 @@
 import textToSpeech from '@google-cloud/text-to-speech';
 import fs from 'fs';
 import util from 'util';
-import { FILES_PATH } from './config';
+import { FILES_PATH, SERVICE_ACCOUNT_PATH } from './config';
 
 // Creates a client
 const client = new textToSpeech.TextToSpeechClient({
   projectId: 'taskmaster-314718',
-  keyFilename: FILES_PATH + '/service-account.json',
+  keyFilename: SERVICE_ACCOUNT_PATH,
 });
 
 export const speak = async (text: string, roomId: string) => {

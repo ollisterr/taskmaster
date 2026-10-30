@@ -1,17 +1,8 @@
 import { io } from 'socket.io-client';
 
-const PORT = 8000;
+// The back serves this client, so the API and socket share its origin
+export const API_URL = '/api';
 
-export const SOCKET_URL = `${
-  window.location.origin.match('localhost')
-    ? 'http://localhost'
-    : window.location.origin
-}:${PORT}`;
-
-export const API_URL = `${
-  window.location.origin.match('localhost')
-    ? 'http://localhost'
-    : window.location.origin
-}:${PORT + 1}`;
-
-export const socket = io(SOCKET_URL);
+// WebSocket only: the back drops sockets without an Origin header, and
+// browsers leave it off same-origin polling requests
+export const socket = io({ transports: ['websocket'] });

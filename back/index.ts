@@ -1,6 +1,6 @@
-import cors from 'cors';
 import express from 'express';
 import http from 'http';
+import path from 'path';
 import { Server } from 'socket.io';
 import bcrypt from 'bcrypt';
 import fs from 'fs';
@@ -8,22 +8,17 @@ import util from 'util';
 import { v4 as uuidv4 } from 'uuid';
 
 import { createMessage, formatUrl } from './utils';
+import { PUBLIC_PATH } from './utils/config';
 import { speak } from './utils/textToSpeech';
 import { initFileSystem } from './utils/fileSystem';
 
 const app = express();
-app.use(cors());
 app.use(express.json());
 
+// The API, the socket and the front client share one origin and port.
 const server: http.Server = http.createServer(app);
 
-const io: Server = require('socket.io')(server, {
-  cors: {
-    origin: '*',
-    methods: ['GET', 'POST'],
-    credentials: false,
-  },
-});
+const io = new Server(server);
 
 type Message = {
   message: string;
@@ -132,17 +127,11 @@ setInterval(() => {
   });
 }, 1000 * 60 * 60 * 12);
 
-// WEB SOCKET
-
-const PORT = Number(process.env.PORT) || 8000;
-
-io.listen(PORT);
-
 // ROUTES
 
-app.get('/', (_, res) => res.send('Hello world!'));
+const api = express.Router();
 
-app.post('/join', (req, res) => {
+api.post('/join', (req, res) => {
   if (!req.body.roomId) {
     return res.status(400).json({ message: 'Invalid room ID', code: 400 });
   }
@@ -156,7 +145,7 @@ app.post('/join', (req, res) => {
   }
 });
 
-app.post('/login', async (req, res) => {
+api.post('/login', async (req, res) => {
   if (!req.body.roomId || !req.body.password) {
     return res.status(400).json({ message: 'Missing parameters', code: 400 });
   }
@@ -179,7 +168,7 @@ app.post('/login', async (req, res) => {
   return res.json({ roomId, token: rooms[roomId].token });
 });
 
-app.post('/create', async (req, res) => {
+api.post('/create', async (req, res) => {
   if (!req.body.roomId || !req.body.password) {
     return res.status(400).json({ message: 'Invalid parameters', code: 400 });
   }
@@ -213,7 +202,17 @@ app.post('/create', async (req, res) => {
   res.json({ roomId, token });
 });
 
-app.listen(PORT + 1, () => {
-  console.info(`WebSocket is listening on port ${PORT}!`);
-  console.info(`App is listening on port ${PORT + 1}!`);
+app.use('/api', api);
+
+// FRONT CLIENT
+
+app.use(express.static(PUBLIC_PATH));
+
+// Client-side routes (/:room, /admin/:room) all load the single-page app
+app.get('*', (_, res) => res.sendFile(path.join(PUBLIC_PATH, 'index.html')));
+
+const PORT = Number(process.env.PORT) || 8000;
+
+server.listen(PORT, () => {
+  console.info(`Listening on port ${PORT}!`);
 });

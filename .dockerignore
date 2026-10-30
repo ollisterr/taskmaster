@@ -1,0 +1,7 @@
+**/node_modules
+**/build
+# Credentials are mounted at runtime, never copied into the image
+back/files
+.git
+.github
+.worktrees
