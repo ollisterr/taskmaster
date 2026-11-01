@@ -111,16 +111,17 @@ initFileSystem();
 
 // clean files every 12h
 setInterval(() => {
-  Object.entries(rooms).forEach(async ([key, value]) => {
+  Object.entries(rooms).forEach(([key, value]) => {
     const date = new Date(value.timestamp);
 
     // Delete rooms that have been idle for over 3 days
     if (Date.now() - date.getTime() > 1000 * 60 * 60 * 24 * 3) {
       delete rooms[key];
 
-      if (rooms[key].file) {
-        await fs.unlink(rooms[key].file as string, (err) =>
-          console.log('Error deleting file:', err),
+      if (value.file) {
+        fs.unlink(
+          value.file,
+          (err) => err && console.log('Error deleting file:', err),
         );
       }
     }
